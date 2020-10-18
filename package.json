@@ -1,0 +1,23 @@
+{
+    "name": "node_backend_ik2019_lab3",
+    "version": "1.0.0",
+    "description": "Backend for deployment to Heroku",
+    "main": "server.js",
+    "scripts": {
+        "test": "echo \"Error: no test specified\" && exit 1",
+        "start": "node server.js"
+    },
+    "author": "h13antfl",
+    "license": "ISC",
+    "dependencies": {
+        "better-sqlite3": "^7.1.1",
+        "bluebird": "^3.7.2",
+        "express": "^4.17.1",
+        "nodemon": "^2.0.5",
+        "sqlite": "^4.0.15",
+        "sqlite3": "^5.0.0"
+    },
+    "engines": {
+        "node": "12.x"
+    }
+}
