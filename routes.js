@@ -10,7 +10,7 @@ router.use(bodyParser.urlencoded({ extended: true }));
 router.get('/', async function(req, res) {
 
 
-    res.json({ message: "Hello Mama" });
+    res.json({ message: "This is the server for android studio responding!" });
     console.log("Hello Mama");
 
 
