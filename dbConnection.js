@@ -5,9 +5,10 @@ var pg = require('pg');
 
 var conString = process.env.ELEPHANTSQL_URL || "postgres://ysbibvle:7wD-LX4KUqbOCF9XOiHe4Q4xKRt0VZaE@hattie.db.elephantsql.com:5432/ysbibvle";
 
-var client = new pg.Client(conString);
+
 
 const getGamesPG = async() => {
+    var client = new pg.Client(conString);
     return new Promise((resolve, reject) => {
 
         client.connect(async function(err) {
@@ -22,98 +23,191 @@ const getGamesPG = async() => {
                 console.log(result.rows);
                 client.end();
                 resolve(result.rows);
-
-
             });
         })
     })
-}
-
-const getGames = () => {
-
-    try {
-        const sql = db.prepare(`SELECT * FROM videogames_v2`);
-        const games = sql.all();
-        return (games);
-
-    } catch (error) {
-
-        throw Error("Could not fetch from database")
-    }
 };
 
-const getGame = async(id) => {
+const getGamePG = async(id) => {
+    var client = new pg.Client(conString);
+    const gameId = id;
+    console.log(id)
+    return new Promise((resolve, reject) => {
 
-    try {
-        const sql = db.prepare(`SELECT * FROM videogames_v2 WHERE id= ?`);
-        const game = sql.get(id);
-        return (game);
+        client.connect(async function(err) {
 
-
-    } catch (error) {
-        throw Error("Could not fetch from database");
-
-    }
+            if (err) {
+                return console.error('could not connect to postgres', err);
+            }
+            client.query('SELECT * FROM videogames_v2 WHERE id = $1', [id], function(err, result) {
+                if (err) {
+                    return console.error('error running query', err);
+                }
+                console.log(result.rows);
+                client.end();
+                resolve(result.rows);
+            });
+        })
+    })
 };
 
-const addGame = async(id, title, genre, platform, img) => {
+const addGamePg = async(title, genre, platform, img) => {
+    var client = new pg.Client(conString);
 
-    try {
-        const sql = db.prepare(`INSERT INTO videogames_v2 (id, title, genre, platform, img)
-        VALUES (?, ?, ?, ?, ?)`);
-        const newInsert = sql.run(id, title, genre, platform, img);
-        console.log("Insert of " + id, title, genre, platform, img + " Succeded!")
-        return;
+    return new Promise((resolve, reject) => {
 
-    } catch (error) {
+        client.connect(async function(err) {
 
-        throw Error("could not insert game" + error)
-    }
+            if (err) {
+                return console.error('could not connect to postgres', err);
+            }
+            client.query('INSERT INTO videogames_v2 (title, genre, platform, img) VALUES ($1, $2, $3, $4)', [title, genre, platform, img], function(err, result) {
+                if (err) {
+                    return console.error('error running query', err);
+                }
+                console.log(result.rows);
+                client.end();
+                resolve(result.rows);
+            });
+
+
+        })
+    })
 };
 
-const deleteGame = async(id) => {
-    try {
-        const sql = db.prepare(`SELECT * FROM videogames_v2 WHERE id= ?`);
-        const game = sql.get(id);
-        if (game) {
+const deleteGamePG = async(id) => {
+    var client = new pg.Client(conString);
+    const gameId = id;
+    console.log(id)
+    return new Promise((resolve, reject) => {
 
-            const sql = db.prepare(`DELETE FROM videogames_v2 WHERE id= ?`);
-            sql.run(id);
-            return (game);
-        } else {
-            throw Error('Något gick fel!')
-        }
+        client.connect(async function(err) {
 
-    } catch (error) {
-        console.log(error);
-        throw error;
+            if (err) {
+                return console.error('could not connect to postgres', err);
+            }
+            client.query('DELETE FROM videogames_v2 WHERE id= $1', [id], function(err, result) {
+                if (err) {
+                    return console.error('error running query', err);
+                }
+                console.log(result.rows);
+                client.end();
+                resolve(result.rows);
+            });
 
-    }
+        })
+    })
 };
 
-const updateGame = async(id, title, genre, platform, img) => {
+const updateGamePg = async(id, title, genre, platform, img) => {
+    var client = new pg.Client(conString);
 
-    try {
+    return new Promise((resolve, reject) => {
 
-        const sql = db.prepare(`SELECT * FROM videogames_v2 WHERE id= ?`);
-        const game = sql.get(id);
+        client.connect(async function(err) {
 
-        if (game) {
-            const sql = db.prepare(`UPDATE videogames_v2 SET title=?, genre=?, platform=?, img=? WHERE id= ?`);
-            const updatedGame = sql.run(title, genre, platform, img, id);
-            return (game);
-        } else {
-            console.log(game)
-            throw Error('Could not update game!');
+            if (err) {
+                return console.error('could not connect to postgres', err);
+            }
+            client.query('UPDATE videogames_v2 SET title=$1, genre=$2, platform=$3, img=$4 WHERE id= $5', [title, genre, platform, img, id], function(err, result) {
+                if (err) {
+                    return console.error('error running query', err);
+                }
+                console.log(result.rows);
+                client.end();
+                resolve(result.rows);
+            });
 
-        }
 
-    } catch (error) {
-
-        throw error;
-
-    }
+        })
+    })
 };
+
+// const getGames = () => {
+
+//     try {
+//         const sql = db.prepare(`SELECT * FROM videogames_v2`);
+//         const games = sql.all();
+//         return (games);
+
+//     } catch (error) {
+
+//         throw Error("Could not fetch from database")
+//     }
+// };
+
+// const getGame = async(id) => {
+
+//     try {
+//         const sql = db.prepare(`SELECT * FROM videogames_v2 WHERE id= ?`);
+//         const game = sql.get(id);
+//         return (game);
+
+
+//     } catch (error) {
+//         throw Error("Could not fetch from database");
+
+//     }
+// };
+
+// const addGame = async(id, title, genre, platform, img) => {
+
+//     try {
+//         const sql = db.prepare(`INSERT INTO videogames_v2 (id, title, genre, platform, img)
+//         VALUES (?, ?, ?, ?, ?)`);
+//         const newInsert = sql.run(id, title, genre, platform, img);
+//         console.log("Insert of " + id, title, genre, platform, img + " Succeded!")
+//         return;
+
+//     } catch (error) {
+
+//         throw Error("could not insert game" + error)
+//     }
+// };
+
+// const deleteGame = async(id) => {
+//     try {
+//         const sql = db.prepare(`SELECT * FROM videogames_v2 WHERE id= ?`);
+//         const game = sql.get(id);
+//         if (game) {
+
+//             const sql = db.prepare(`DELETE FROM videogames_v2 WHERE id= ?`);
+//             sql.run(id);
+//             return (game);
+//         } else {
+//             throw Error('Något gick fel!')
+//         }
+
+//     } catch (error) {
+//         console.log(error);
+//         throw error;
+
+//     }
+// };
+
+// const updateGame = async(id, title, genre, platform, img) => {
+
+//     try {
+
+//         const sql = db.prepare(`SELECT * FROM videogames_v2 WHERE id= ?`);
+//         const game = sql.get(id);
+
+//         if (game) {
+//             const sql = db.prepare(`UPDATE videogames_v2 SET title=?, genre=?, platform=?, img=? WHERE id= ?`);
+//             const updatedGame = sql.run(title, genre, platform, img, id);
+//             return (game);
+//         } else {
+//             console.log(game)
+//             throw Error('Could not update game!');
+
+//         }
+
+//     } catch (error) {
+
+//         throw error;
+
+//     }
+// };
 
 
 
@@ -151,4 +245,4 @@ const updateGame = async(id, title, genre, platform, img) => {
 //     })
 // }
 
-module.exports = { getGames, getGame, addGame, deleteGame, updateGame, getGamesPG };
+module.exports = { getGamesPG, getGamePG, addGamePg, deleteGamePG, updateGamePg };
