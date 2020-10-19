@@ -15,11 +15,22 @@ router.get('/', async function(req, res) {
 
 
 });
+router.get('/getallgamesPG', async function(req, res) {
+    try {
+        const allGames = await database.getGamesPG();
+
+        res.json(allGames);
+        console.log(allGames)
+    } catch (error) {
+
+        console.log(error)
+    }
+})
 
 router.get('/getallgames', async function(req, res) {
     try {
         const allGames = await database.getGames();
-        //  getResult().then(response => console.log(response));
+
         res.json(allGames);
         console.log(allGames)
     } catch (error) {

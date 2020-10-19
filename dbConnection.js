@@ -1,6 +1,33 @@
 const promise = require('bluebird');
 const Database = require('better-sqlite3');
 const db = new Database('database.db', { verbose: console.log });
+var pg = require('pg');
+
+var conString = process.env.ELEPHANTSQL_URL || "postgres://ysbibvle:7wD-LX4KUqbOCF9XOiHe4Q4xKRt0VZaE@hattie.db.elephantsql.com:5432/ysbibvle";
+
+var client = new pg.Client(conString);
+
+const getGamesPG = async() => {
+    return new Promise((resolve, reject) => {
+
+        client.connect(async function(err) {
+
+            if (err) {
+                return console.error('could not connect to postgres', err);
+            }
+            client.query('SELECT * FROM videogames_v2', function(err, result) {
+                if (err) {
+                    return console.error('error running query', err);
+                }
+                console.log(result.rows);
+                client.end();
+                resolve(result.rows);
+
+
+            });
+        })
+    })
+}
 
 const getGames = () => {
 
@@ -124,4 +151,4 @@ const updateGame = async(id, title, genre, platform, img) => {
 //     })
 // }
 
-module.exports = { getGames, getGame, addGame, deleteGame, updateGame };
+module.exports = { getGames, getGame, addGame, deleteGame, updateGame, getGamesPG };
